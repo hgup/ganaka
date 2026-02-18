@@ -28,6 +28,20 @@
         "panel": "dedicated"
       },
       "runOptions": { "runOn": "default" }
+    },
+    {
+      "label": "Generate Schema",
+      "type": "shell",
+      "command": "pnpx",
+      "args": ["orval"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps/bench"
+      },
+      "presentation": {
+        "group": "servers",
+        "panel": "dedicated"
+      },
+      "runOptions": { "runOn": "default" }
     }
   ]
 }

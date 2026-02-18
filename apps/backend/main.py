@@ -4,11 +4,7 @@ from routers import tests
 
 
 app = FastAPI()
-app.include_router(
-    tests.router,
-    prefix="/tests",
-    tags=["Test calculation"]
-)
+app.include_router(tests.router, prefix="/tests", tags=["Calculation"])
 
 @app.get("/")
 async def root():

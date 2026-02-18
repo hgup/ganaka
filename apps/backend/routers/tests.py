@@ -10,12 +10,12 @@ class CalculationRequest(BaseModel):
 
 class CalculationResponse(BaseModel):
     success: bool
-    result: float
+    result: float | None
     message: str
 
 
 @router.post("/multiply", response_model=CalculationResponse)
-async def process_data(request: CalculationRequest):
+async def multiply(request: CalculationRequest):
     try:
         if request.modifier == 0:
             raise ValueError("Cannot be zero")
@@ -29,6 +29,5 @@ async def process_data(request: CalculationRequest):
     except Exception as e:
         return {
             "success": False,
-            "result": 0.0,
             "message": str(e)
         }
