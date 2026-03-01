@@ -5,7 +5,10 @@
       "label": "Start Frontend",
       "type": "shell",
       "command": "pnpm",
-      "args": ["run", "dev"],
+      "args": [
+        "run",
+        "dev"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/apps/bench"
       },
@@ -13,13 +16,21 @@
         "group": "servers",
         "panel": "dedicated"
       },
-      "runOptions": { "runOn": "default" }
+      "runOptions": {
+        "runOn": "default"
+      },
+      "problemMatcher": []
     },
     {
       "label": "Start Backend",
       "type": "shell",
       "command": "${command:python.interpreterPath}",
-      "args": ["-m", "fastapi", "dev", "main.py"],
+      "args": [
+        "-m",
+        "fastapi",
+        "dev",
+        "main.py"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/apps/backend"
       },
@@ -27,13 +38,18 @@
         "group": "servers",
         "panel": "dedicated"
       },
-      "runOptions": { "runOn": "default" }
+      "runOptions": {
+        "runOn": "default"
+      },
+      "problemMatcher": []
     },
     {
       "label": "Generate Schema",
       "type": "shell",
       "command": "pnpx",
-      "args": ["orval"],
+      "args": [
+        "orval"
+      ],
       "options": {
         "cwd": "${workspaceFolder}/apps/bench"
       },
@@ -41,7 +57,10 @@
         "group": "servers",
         "panel": "dedicated"
       },
-      "runOptions": { "runOn": "default" }
+      "runOptions": {
+        "runOn": "default"
+      },
+      "problemMatcher": []
     }
   ]
 }

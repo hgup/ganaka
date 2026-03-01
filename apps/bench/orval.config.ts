@@ -14,24 +14,6 @@ export default defineConfig({
         type: "zod",
       },
       client: "fetch",
-      override: {
-        zod: {
-          coerce: {
-            response: true,
-            query: true,
-            param: true,
-            header: true,
-            body: true,
-          },
-          strict: {
-            response: true,
-            query: true,
-            param: true,
-            header: true,
-            body: true,
-          },
-        },
-      },
     },
   },
 });
