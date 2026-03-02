@@ -1,14 +1,14 @@
-import { create } from 'zustand';
-import { 
-  Node, 
-  Edge, 
-  Connection, 
-  addEdge, 
-  applyNodeChanges, 
-  applyEdgeChanges, 
-  NodeChange, 
-  EdgeChange 
-} from '@xyflow/react';
+import { create } from "zustand";
+import {
+  Node,
+  Edge,
+  Connection,
+  addEdge,
+  applyNodeChanges,
+  applyEdgeChanges,
+  NodeChange,
+  EdgeChange,
+} from "@xyflow/react";
 
 // "Uploaded CSV"
 export type TriangleNodeData = Record<string, unknown> & {
@@ -19,27 +19,32 @@ export type TriangleNodeData = Record<string, unknown> & {
     devPeriods: number;
     totalLoss: number;
   };
-}
+};
+export type MethodType = "none" | "chainladder" | "bf" | "capecod";
 
-// "Chain Ladder Node"
-export type ChainLadderNodeData = Record<string, unknown> & {
-  averageMethod: 'volume' | 'simple' | 'regression'; // cl.Development params
-  nPeriods: number | 'all';
+// Generic "Method Node"
+export type MethodNodeData = Record<string, unknown> & {
+  methodType: MethodType;
+  // Parameters for specific methods
+  config: {
+    averageMethod?: "volume" | "simple" | "regression"; // cl.Development params
+    nPeriods?: number | "all";
+    lrt?: number; // for BF
+  };
   results?: {
     totalIbnr: number;
-    projectedUltimate: number;
   };
-}
+};
 
 // Combine them into a custom Node type for strict typing
-export type CanvasNode = Node<TriangleNodeData | ChainLadderNodeData>;
-
+export type CanvasNode = Node<TriangleNodeData | MethodNodeData>;
 
 interface CanvasState {
   // Core Canvas State
   nodes: CanvasNode[];
   edges: Edge[];
   selectedNodeId: string | null;
+  pendingNodeType: "triangleNode" | "methodNode" | null;
 
   // Canvas Actions (React Flow Requirements)
   onNodesChange: (changes: NodeChange[]) => void;
@@ -49,13 +54,46 @@ interface CanvasState {
   // Business Logic Actions
   addNode: (node: CanvasNode) => void;
   selectNode: (id: string | null) => void;
-  updateNodeData: (id: string, dataUpdate: Partial<TriangleNodeData | ChainLadderNodeData>) => void;
+  updateNodeData: (
+    id: string,
+    dataUpdate: Partial<TriangleNodeData | MethodNodeData>,
+  ) => void;
+
+  // Actions
+  setPendingNode: (type: "triangleNode" | "methodNode" | null) => void;
+  addNodeAtPosition: (
+    type: "triangleNode" | "methodNode",
+    position: { x: number; y: number },
+  ) => void;
 }
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   nodes: [],
   edges: [],
   selectedNodeId: null,
+  pendingNodeType: null,
+
+  setPendingNode: (type) => {
+    set({ pendingNodeType: type });
+  },
+
+  addNodeAtPosition: (type, position) => {
+    const id = `${type}-${Date.now()}`;
+    const newNode: CanvasNode = {
+      id,
+      type,
+      position, // mouse coords
+      data:
+        type === "triangleNode"
+          ? { fileName: "Drop CSV here...", isUploaded: false }
+          : { methodType: "none" as const, config: {} },
+    };
+    get().addNode(newNode);
+    set({
+      selectedNodeId: id,
+      pendingNodeType: null,
+    });
+  },
 
   // --- REACT FLOW MECHANICS ---
   onNodesChange: (changes) => {
@@ -73,7 +111,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   addNode: (node) => {
     set({ nodes: [...get().nodes, node] });
   },
-  
+
   selectNode: (id) => {
     set({ selectedNodeId: id });
   },

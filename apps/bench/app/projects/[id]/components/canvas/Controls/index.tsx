@@ -1,3 +1,4 @@
+"use client";
 import {
   MousePointer2,
   Frame,
@@ -13,76 +14,82 @@ import {
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 import { ToolbarButton } from "./control-button";
+import { useCanvasStore } from "@/store/useCanvasStore";
+import { useState } from "react";
 
-interface ControlbarProps {
-  activeTool: string;
-  onToolChange: (tool: string) => void;
-}
+// interface ControlbarProps {
+//   activeTool: string;
+//   onToolChange: (tool: string) => void;
+// }
 
-export default function Controls({ activeTool, onToolChange }: ControlbarProps) {
+export default function Controls() {
+  const [activeTool, onToolChange] = useState("select");
+  const { pendingNodeType, setPendingNode } = useCanvasStore();
   return (
     <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20">
       <div className="flex items-center gap-0.5 bg-background/95 backdrop-blur border rounded-xl shadow-xl px-2 py-1.5">
         <ToolbarButton
           icon={<MousePointer2 className="h-4 w-4" />}
           label="Select (V)"
-          active={activeTool === "select"}
-          onClick={() => onToolChange("select")}
+          active={pendingNodeType === null}
+          onClick={() => setPendingNode(null)}
         />
-        <ToolbarButton
+        {/* <ToolbarButton
           icon={<Frame className="h-4 w-4" />}
           label="Frame (F)"
           active={activeTool === "frame"}
           onClick={() => onToolChange("frame")}
-        />
+        /> */}
 
         <Separator orientation="vertical" className="h-5 my-auto mx-1" />
 
         <ToolbarButton
           icon={<Triangle className="h-4 w-4" />}
           label="Loss Triangle"
-          active={activeTool === "triangle"}
-          onClick={() => onToolChange("triangle")}
+          active={pendingNodeType === "triangleNode"}
+          onClick={() => {
+            setPendingNode('triangleNode')
+          }}
         />
-        <ToolbarButton
+        {/* <ToolbarButton
           icon={<TrendingUp className="h-4 w-4" />}
           label="Development Factors"
           active={activeTool === "ldf"}
           onClick={() => onToolChange("ldf")}
-        />
-        <ToolbarButton
+        /> */}
+        {/* <ToolbarButton
           icon={<Table className="h-4 w-4" />}
           label="Data Table"
           active={activeTool === "table"}
           onClick={() => onToolChange("table")}
-        />
-        <ToolbarButton
+        /> */}
+        {/* <ToolbarButton
           icon={<BarChart2 className="h-4 w-4" />}
           label="Chart"
           active={activeTool === "chart"}
           onClick={() => onToolChange("chart")}
-        />
-        <ToolbarButton
+        /> */}
+        {/* <ToolbarButton
           icon={<Workflow className="h-4 w-4" />}
           label="Method Node"
           active={activeTool === "method"}
           onClick={() => onToolChange("method")}
-        />
+        /> */}
 
         <Separator orientation="vertical" className="h-5 my-auto mx-1" />
 
-        <ToolbarButton
+        {/* <ToolbarButton
           icon={<GitBranch className="h-4 w-4" />}
           label="Connector"
           active={activeTool === "connector"}
           onClick={() => onToolChange("connector")}
-        />
-        <ToolbarButton
+        /> */}
+        {/* <ToolbarButton
           icon={<Type className="h-4 w-4" />}
           label="Text (T)"
           active={activeTool === "text"}
           onClick={() => onToolChange("text")}
-        />
+        /> */}
         <ToolbarButton
           icon={<MessageSquare className="h-4 w-4" />}
           label="Comment (C)"
@@ -92,12 +99,12 @@ export default function Controls({ activeTool, onToolChange }: ControlbarProps) 
 
         <Separator orientation="vertical" className="h-5 my-auto mx-1" />
 
-        <ToolbarButton
+        {/* <ToolbarButton
           icon={<Code2 className="h-4 w-4" />}
           label="Formula Editor"
           active={activeTool === "formula"}
           onClick={() => onToolChange("formula")}
-        />
+        /> */}
       </div>
     </div>
   );
