@@ -1,9 +1,7 @@
 "use server";
 
-import {
-  confirmIngestDataConfirmIngestPost,
-  uploadPreviewDataUploadPreviewPost,
-} from "@api/data/data";
+import { confirmIngestDataConfirmIngestPost, uploadPreviewDataUploadPreviewPost } from "@api/reserving/reserving";
+import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import z from "zod";
 
@@ -69,7 +67,7 @@ export async function uploadAction(
   prevState: FormState,
   formData: FormData,
 ): Promise<FormState> {
-  // Validate
+  // TODO: Go back button
   // const intent = formData.get('intent')
   // if(intent === 'back'){
   //   if (intent === "back") {
@@ -110,6 +108,7 @@ export async function uploadAction(
       });
       if (confirm_res.status !== 200)
         return { ...prevState, error: "Backend connection failed." };
+      revalidatePath('/dashboard')
       redirect(`/projects/${confirm_res.data.project_id}`)
   }
 }

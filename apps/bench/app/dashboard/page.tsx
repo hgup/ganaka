@@ -1,10 +1,9 @@
-import { fetchProjectsDataFetchProjectsGet } from "@api/data/data";
+import { fetchProjectsDataFetchProjectsGet } from "@api/reserving/reserving";
 import { EmptyProjects } from "./components/empty";
 import ProjectsDashboard from "./components/projects";
 
 export default async function DashboardPage() {
-  const { data } = await fetchProjectsDataFetchProjectsGet();
-  console.log(data);
+  const { data } = await fetchProjectsDataFetchProjectsGet({cache: 'no-store'});
   return (
     <div className="flex flex-col  min-w-xl p-10">
       <header className="mb-8 border-b pb-4">

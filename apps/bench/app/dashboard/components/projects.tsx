@@ -233,9 +233,7 @@ export default function ProjectsDashboard({ projects }: FetchTablesResponse) {
                 </TableRow>
               ))}
 
-              <TableRow
-              onClick={() => router.push(`/projects/new`)}
-              >
+              <TableRow onClick={() => router.push(`/projects/new`)}>
                 <TableCell
                   colSpan={5}
                   className="justify-center text-muted-foreground cursor-pointer"

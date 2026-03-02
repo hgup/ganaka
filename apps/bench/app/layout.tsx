@@ -1,7 +1,5 @@
 import type { Metadata } from "next";
-// DOUBT: Why is globals.css not recognized properly by typescript?
-//@ts-expect-error This works actually
-import "./globals.css";
+import './globals.css'
 
 // TODO: Replace later when you are connected to better internet
 // import {JetBrains_Mono } from "next/font/google";

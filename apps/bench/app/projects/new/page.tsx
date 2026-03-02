@@ -145,38 +145,40 @@ export default function DataIngestionWizard() {
   }
 
   return (
-    <div className="min-w-7xl mx-auto p-10 font-sans">
+    <div className="min-w-7xl mx-auto p-10 font-sans flex flex-col justify-center">
       <header className="mb-8 border-b pb-4">
         <h1 className="text-3xl font-bold text-accent">Workbench</h1>
         <p className="text-muted-foreground pt-2">Data Ingestion & Mapping</p>
       </header>
 
-      {state.error && (
-        <div className="mb-8">
-          <AlertDestructive title="Error" description={state.error} />
-        </div>
-      )}
-      <form
-        action={(formData: FormData) => {
-          formData.append("columnMap", JSON.stringify(mapping));
-          action(formData);
-        }}
-      >
-        <Field className="max-w-lg mb-8">
-          <FieldLegend>Project Name</FieldLegend>
-          <FieldLabel htmlFor="projectName">Name your project</FieldLabel>
+      <div className="min-w-lg  mx-auto">
+        {state.error && (
+          <div className="mb-8">
+            <AlertDestructive title="Error" description={state.error} />
+          </div>
+        )}
+        <form
+          action={(formData: FormData) => {
+            formData.append("columnMap", JSON.stringify(mapping));
+            action(formData);
+          }}
+        >
+          <Field className="max-w-lg mb-8">
+            <FieldLegend>Project Name</FieldLegend>
+            <FieldLabel htmlFor="projectName">Name your project</FieldLabel>
 
-          <Input
-            defaultValue={state.step !== 1 ? state.projectName : ""}
-            type="text"
-            id="projectName"
-            name="projectName"
-            required
-          />
-          <FieldDescription>Enter a memorable name.</FieldDescription>
-        </Field>
-        {stepContent}
-      </form>
+            <Input
+              defaultValue={state.step !== 1 ? state.projectName : ""}
+              type="text"
+              id="projectName"
+              name="projectName"
+              required
+            />
+            <FieldDescription>Enter a memorable name.</FieldDescription>
+          </Field>
+          {stepContent}
+        </form>
+      </div>
     </div>
   );
 }

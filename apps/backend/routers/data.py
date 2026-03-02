@@ -23,7 +23,7 @@ with engine.connect() as conn:
     """))
     conn.commit()
 
-router = APIRouter(prefix="/data", tags=["data"])
+router = APIRouter(prefix="/data")
 
 PENDING_UPLOADS = {}
 

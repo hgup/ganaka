@@ -14,6 +14,12 @@ export default defineConfig({
         type: "zod",
       },
       client: "fetch",
+      // override: {
+      //   mutator: {
+      //     path: './lib/api/mutator/custom-fetch.ts',
+      //     name: 'customFetch'
+      //   }
+      // }
     },
   },
 });

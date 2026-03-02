@@ -5,10 +5,7 @@
       "label": "Start Frontend",
       "type": "shell",
       "command": "pnpm",
-      "args": [
-        "run",
-        "dev"
-      ],
+      "args": ["run", "dev"],
       "options": {
         "cwd": "${workspaceFolder}/apps/bench"
       },
@@ -25,12 +22,7 @@
       "label": "Start Backend",
       "type": "shell",
       "command": "${command:python.interpreterPath}",
-      "args": [
-        "-m",
-        "fastapi",
-        "dev",
-        "main.py"
-      ],
+      "args": ["-m", "fastapi", "dev", "main.py"],
       "options": {
         "cwd": "${workspaceFolder}/apps/backend"
       },
@@ -47,9 +39,7 @@
       "label": "Generate Schema",
       "type": "shell",
       "command": "pnpx",
-      "args": [
-        "orval"
-      ],
+      "args": ["orval"],
       "options": {
         "cwd": "${workspaceFolder}/apps/bench"
       },
@@ -61,6 +51,37 @@
         "runOn": "default"
       },
       "problemMatcher": []
+    },
+    {
+      "label": "shadcn: add component",
+      "type": "shell",
+      "command": "pnpx",
+      "args": ["shadcn@latest", "add", "${input:shadcnArgs}"],
+      "options": {
+        "cwd": "${workspaceFolder}/apps/bench",
+        "env": {
+          "NODE_OPTIONS": "--use-system-ca"
+        },
+      },
+      "runOptions": {
+        "runOn": "default"
+      },
+      "problemMatcher": [],
+      "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "shared",
+        "showReuseMessage": false
+      }
+    }
+  ],
+  "inputs": [
+    {
+      "id": "shadcnArgs",
+      "type": "promptString",
+      "description": "Enter the shadcn component(s) to add (e.g., button card dialog)",
+      "default": ""
     }
   ]
 }
