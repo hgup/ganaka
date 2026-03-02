@@ -116,9 +116,8 @@
   --sidebar-accent-foreground: oklch(0.28 0.04 193);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
-  --color-pattern: oklch(0.5 0.12 183);
   .react-flow__minimap {
-    --xy-minimap-background-color-default: var(--color-background);
+    --xy-minimap-background-color-default: var(--color-card);
   }
 }
 
@@ -132,8 +131,6 @@
 }
 
 .react-flow__background {
-  background: var(--color-background);
-  --xy-background-pattern-dots-color-default: var(--color-pattern);
-  --xy-background-pattern-line-color-default: var(--color-pattern);
-  --xy-background-pattern-cross-color-default: var(--color-pattern);
+  background: var(--color-neutral-950);
+  --xy-background-pattern-cross-color-default: var(--color-neutral-700);
 }

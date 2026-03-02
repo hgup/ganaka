@@ -69,12 +69,14 @@ export default function Controls() {
           active={activeTool === "chart"}
           onClick={() => onToolChange("chart")}
         /> */}
-        {/* <ToolbarButton
+        <ToolbarButton
           icon={<Workflow className="h-4 w-4" />}
           label="Method Node"
-          active={activeTool === "method"}
-          onClick={() => onToolChange("method")}
-        /> */}
+          active={pendingNodeType === "methodNode"}
+          onClick={() => {
+            setPendingNode('methodNode')
+          }}
+        />
 
         <Separator orientation="vertical" className="h-5 my-auto mx-1" />
 

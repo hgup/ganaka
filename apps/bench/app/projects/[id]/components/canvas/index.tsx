@@ -24,8 +24,9 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 
 // Import our Zustand store
 import { useCanvasStore } from "@/store/useCanvasStore";
-import { TriangleNode } from "./Nodes/TriangleNode";
-import { MethodNode } from "./Nodes/MethodNode";
+import { TriangleNode, TriangleNodeType } from "./Nodes/TriangleNode";
+import { MethodNode, MethodNodeType } from "./Nodes/MethodNode";
+import { CanvasContextMenu } from "./ContextMenu";
 
 // TODO: We will build these in the next step and import them properly!
 // import { TriangleNode } from './Nodes/TriangleNode';
@@ -47,6 +48,7 @@ function Flow() {
     onEdgesChange,
     onConnect,
     selectNode,
+    selectedNodeId,
     pendingNodeType,
     addNodeAtPosition,
   } = useCanvasStore();
@@ -76,37 +78,75 @@ function Flow() {
     },
     [selectNode],
   );
+  const onPaneContextMenu = useCallback(
+    () => {
+      selectNode(null)
+      if (selectedNodeId)
+        onNodesChange([
+          {
+            id: selectedNodeId,
+            type: "select",
+            selected: false,
+          },
+        ]);
+      },[selectedNodeId, onNodesChange, selectNode])
+
+  const onNodeContextMenu: NodeMouseHandler = useCallback(
+    (event: React.MouseEvent, node) => {
+      if (selectedNodeId)
+        onNodesChange([
+          {
+            id: selectedNodeId,
+            type: "select",
+            selected: false,
+          },
+        ]);
+      selectNode(node.id);
+      onNodesChange([
+        {
+          id: node.id,
+          type: "select",
+          selected: true,
+        },
+      ]);
+    },
+    [selectNode, onNodesChange, selectedNodeId],
+  );
 
   return (
     <main className="flex-1 relative overflow-scroll">
-          <ReactFlow
-            className="h-full w-full"
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={nodeTypes}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            onPaneClick={onPaneClick}
-            onConnect={onConnect}
-            proOptions={{ hideAttribution: true }}
-            colorMode={resolvedTheme as "light" | "dark" | "system"}
-            fitViewOptions={fitViewOptions}
-            defaultEdgeOptions={defaultEdgeOptions}
-            // fitView // autozoom to fit nodes
-          >
-            <MiniMap />
-            <Background variant={BackgroundVariant.Cross} gap={24} size={2} />
-            <Controls />
-          </ReactFlow>
+      <CanvasContextMenu>
+        <ReactFlow
+          className="h-full w-full"
+          nodes={nodes}
+          edges={edges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onNodeClick={onNodeClick}
+          onPaneClick={onPaneClick}
+          onPaneContextMenu={onPaneContextMenu}
+          onNodeContextMenu={onNodeContextMenu}
+          onConnect={onConnect}
+          proOptions={{ hideAttribution: true }}
+          colorMode={resolvedTheme as "light" | "dark" | "system"}
+          fitViewOptions={fitViewOptions}
+          defaultEdgeOptions={defaultEdgeOptions}
+          // fitView // autozoom to fit nodes
+        >
+          <MiniMap />
+          <Background variant={BackgroundVariant.Cross} gap={24} size={2} />
+          <Controls />
+        </ReactFlow>
+      </CanvasContextMenu>
     </main>
   );
 }
 
 export default function Canvas() {
   return (
-      <ReactFlowProvider>
-        <Flow />
-      </ReactFlowProvider>
+    <ReactFlowProvider>
+      <Flow />
+    </ReactFlowProvider>
   );
 }

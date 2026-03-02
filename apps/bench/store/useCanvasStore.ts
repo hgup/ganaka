@@ -53,6 +53,7 @@ interface CanvasState {
 
   // Business Logic Actions
   addNode: (node: CanvasNode) => void;
+  removeNode: (id: string | null) => void;
   selectNode: (id: string | null) => void;
   updateNodeData: (
     id: string,
@@ -66,6 +67,7 @@ interface CanvasState {
     position: { x: number; y: number },
   ) => void;
 }
+
 
 export const useCanvasStore = create<CanvasState>((set, get) => ({
   nodes: [],
@@ -95,6 +97,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     });
   },
 
+
   // --- REACT FLOW MECHANICS ---
   onNodesChange: (changes) => {
     set({ nodes: applyNodeChanges(changes, get().nodes) as CanvasNode[] });
@@ -110,6 +113,10 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   // --- YOUR APP LOGIC ---
   addNode: (node) => {
     set({ nodes: [...get().nodes, node] });
+  },
+
+  removeNode: (id) => {
+    set({nodes: [...get().nodes.filter(n => n.id !== id)]})
   },
 
   selectNode: (id) => {

@@ -7,7 +7,7 @@ export type TriangleNodeType = Node<TriangleNodeData, 'triangleNode'>;
 export function TriangleNode({ data, selected }: NodeProps<TriangleNodeType>) {
   return (
     <div 
-      className={`relative min-w-[220px] rounded-lg border bg-[#1a1a1a] p-4 text-white shadow-xl transition-colors ${
+      className={`relative min-w-[220px] rounded-lg border bg-[#1a1a1a] p-4 text-white shadow-xl transition-colors cursor-pointer ${
         selected ? 'border-teal-500' : 'border-slate-700'
       }`}
     >
