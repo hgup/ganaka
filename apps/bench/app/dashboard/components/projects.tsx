@@ -65,7 +65,7 @@ export default function ProjectsDashboard({ projects }: FetchTablesResponse) {
     .filter(
       (p) =>
         p.name.toLowerCase().includes(search.toLowerCase()) ||
-        p.original_filename.toLowerCase().includes(search.toLowerCase()) ||
+        // p.original_filename.toLowerCase().includes(search.toLowerCase()) ||
         p.id.toLowerCase().includes(search.toLowerCase()),
     )
     .sort((a, b) => {
@@ -161,12 +161,12 @@ export default function ProjectsDashboard({ projects }: FetchTablesResponse) {
                       <Hash className="h-3.5 w-3.5 shrink-0" />
                       <span className="font-mono">{project.id}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    {/* <div className="flex items-center gap-2">
                       <Table2 className="h-3.5 w-3.5 shrink-0" />
                       <span className="font-mono truncate">
                         {project.original_filename}
                       </span>
-                    </div>
+                    </div> */}
                     <div className="flex items-center gap-2">
                       <Calendar className="h-3.5 w-3.5 shrink-0" />
                       <span>Created {formatDate(project.created_at)}</span>
@@ -197,7 +197,7 @@ export default function ProjectsDashboard({ projects }: FetchTablesResponse) {
               <TableRow>
                 <TableHead>Name</TableHead>
                 <TableHead>Project ID</TableHead>
-                <TableHead>Claims Table</TableHead>
+                {/* <TableHead>Claims Table</TableHead> */}
                 <TableHead>Created</TableHead>
                 <TableHead>Last Opened</TableHead>
                 <TableHead className="w-8" />
@@ -218,9 +218,9 @@ export default function ProjectsDashboard({ projects }: FetchTablesResponse) {
                       {project.id}
                     </Badge>
                   </TableCell>
-                  <TableCell className="font-mono text-sm text-muted-foreground">
+                  {/* <TableCell className="font-mono text-sm text-muted-foreground">
                     {project.original_filename}
-                  </TableCell>
+                  </TableCell> */}
                   <TableCell className="text-sm text-muted-foreground">
                     {formatDate(project.created_at)}
                   </TableCell>
