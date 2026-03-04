@@ -18,11 +18,11 @@ const action = async (formData: FormData) => {
     redirect(`/projects/${data.id}`)
 };
 
-export default function DataIngestionWizard() {
+export default function NewProjectPage() {
   return (
-    <div className="max-w-lg mx-auto p-10 font-sans flex flex-col justify-center">
+    <div className="max-w-lg mx-auto p-10 flex flex-col justify-center">
       <header className="mb-8 border-b pb-4">
-        <h1 className="text-3xl font-bold text-accent">Workbench</h1>
+        <h1 className="text-3xl font-bold text-accent-foreground">Workbench</h1>
         <p className="text-muted-foreground pt-2">Add new project</p>
       </header>
 
@@ -47,7 +47,7 @@ export default function DataIngestionWizard() {
         </form>
         <form>
           <Field className="max-w-lg">
-            <FieldLegend className="mt-8 mb-4 text-accent text-center">
+            <FieldLegend className="mt-8 mb-4 text-muted-foreground text-center">
               Already have a project.db file?
             </FieldLegend>
             <Input type="file" id="file" name="file" accept=".csv" required />

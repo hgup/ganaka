@@ -1,0 +1,47 @@
+import { fetchTablesDataFetchTablesGet } from "@api/project/project";
+import { NextRequest, NextResponse } from "next/server";
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } },
+) {
+  try {
+    const projectId =  (await params).id;
+
+    // 1. Validate the input
+    if (!projectId) {
+      return NextResponse.json(
+        { error: "Project ID is required" },
+        { status: 400 },
+      );
+    }
+
+
+    const results = await fetchTablesDataFetchTablesGet({
+      project_id: projectId,
+    });
+
+    if(results.status !== 200)
+      return NextResponse.json(
+        { error: "Backend error" },
+        { status: results.status },
+      );
+
+
+    const datasets = results.data.tables;
+
+    // 3. Return the data with appropriate headers
+    return NextResponse.json(datasets, {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store, max-age=0", // Prevents stale actuarial data
+      },
+    });
+  } catch (error) {
+    console.error(error)
+    return NextResponse.json(
+      { error: "Failed to fetch project data" },
+      { status: 500 },
+    );
+  }
+}

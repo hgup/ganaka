@@ -27,7 +27,7 @@ export function SidebarSection({
   return (
     <Collapsible open={open} onOpenChange={setOpen} className={clsx(className)}>
       <div className="flex items-center justify-between px-3 py-1.5">
-        <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+        <CollapsibleTrigger className="flex items-center gap-1 text-xs font-semibold hover:text-foreground transition-colors">
           {open ? (
             <ChevronDown className="h-3 w-3" />
           ) : (

@@ -6,19 +6,22 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarSection } from "./SidebarSection";
 import { LayerRow } from "./LayerItem";
 import { DATA, MODELS } from "../../constants";
-import { useState } from "react";
+import {  UIState, useUIStore } from "@/store/useUIStore";
+import { Data } from "./Data";
+const PANES: UIState["leftSidebar"]["tab"][] = ["Nodes", "Data"];
 
 export function LeftSidebar() {
-  const [activeTab, onTabChange] = useState("nodes");
+  const activeTab = useUIStore((s) => s.leftSidebar.tab);
+  const onTabChange = useUIStore((s) => s.setLeftTab);
   return (
-    <aside className="w-56 border-r flex flex-col bg-background shrink-0">
+    <aside className="w-56 border-r h-full flex flex-col bg-background shrink-0">
       <div className="flex border-b">
-        {["Nodes", "Data"].map((t) => (
+        {PANES.map((t) => (
           <button
             key={t}
             className="flex-1 py-2 text-xs font-medium text-muted-foreground hover:text-foreground border-b-2 border-transparent data-[active=true]:border-primary data-[active=true]:text-foreground transition-colors"
-            data-active={t.toLowerCase() === activeTab}
-            onClick={() => onTabChange(t.toLowerCase())}
+            data-active={t === activeTab}
+            onClick={() => onTabChange(t)}
           >
             {t}
           </button>
@@ -29,29 +32,19 @@ export function LeftSidebar() {
       </div>
 
       <ScrollArea className="flex-1">
-        {activeTab === "nodes" && (
+        {activeTab === "Nodes" && (
           <div className="py-1">
             <Scope />
-
             <Separator className="my-1" />
-
             <ModalTree />
-
             <Separator className="my-1" />
-
             <DataCan />
           </div>
         )}
-        {activeTab === "data" && <Data />}
+        {activeTab === "Data" && <Data />}
       </ScrollArea>
     </aside>
   );
-}
-
-function Data() {
-  return <div className="px-3 py-4 text-xs text-muted-foreground text-center">
-    Upload Data to get started.
-  </div>;
 }
 
 function Scope() {

@@ -6,7 +6,6 @@ import {
   Calendar,
   Clock,
   Hash,
-  Table2,
   ChevronRight,
   LayoutGrid,
   List,

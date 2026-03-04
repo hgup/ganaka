@@ -2,14 +2,20 @@ import type { Metadata } from "next";
 import './globals.css'
 
 // TODO: Replace later when you are connected to better internet
-// import {JetBrains_Mono } from "next/font/google";
+// import {Inter } from "next/font/google";
 // const jetbrainsMono = JetBrains_Mono({subsets:['latin'],variable:'--font-sans'});
 
 import localFont from "next/font/local";
 import { ThemeProvider } from "@components/theme-provider";
-const local_jetbrains_mono = localFont({
-  src: "../public/JetBrainsMono-VariableFont_wght.ttf",
+import { cn } from "@lib/utils";
+// const local_jetbrains_mono = localFont({
+//   src: "../public/JetBrainsMono-VariableFont_wght.ttf",
+// });
+export const lexend = localFont({
+  src: "../public/Lexend-VariableFont_wght.ttf",
+  display: 'swap',
 });
+// const inter = Inter()
 
 export const metadata: Metadata = {
   title: "Bench",
@@ -23,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html suppressHydrationWarning lang="en">
-      <body className={`${local_jetbrains_mono.className} antialiased`}>
+      <body className={cn(lexend.className, 'antialiased')}>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"

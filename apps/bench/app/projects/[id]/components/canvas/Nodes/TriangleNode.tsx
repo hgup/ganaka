@@ -1,14 +1,26 @@
-import { Handle, Position, NodeProps, Node } from '@xyflow/react';
-import { TriangleNodeData } from '@/store/useCanvasStore';
+import { Handle, Position, NodeProps, Node } from "@xyflow/react";
+import { TriangleNodeData } from "@/store/useCanvasStore";
+import React from "react";
+import { useUIStore } from "@/store/useUIStore";
 
-export type TriangleNodeType = Node<TriangleNodeData, 'triangleNode'>;
+export type TriangleNodeType = Node<TriangleNodeData, "triangleNode">;
 
 // We use the NodeProps generic to get perfect autocomplete for our specific data
-export function TriangleNode({ data, selected }: NodeProps<TriangleNodeType>) {
+export function TriangleNode({ data, selected, id }: NodeProps<TriangleNodeType>) {
+  const setTab = useUIStore((s) => s.setLeftTab);
+  const handleDoubleClick: React.MouseEventHandler = () => {
+    setTab("Data");
+  };
+  const handleClick: React.MouseEventHandler = () => {
+    if (!data.isUploaded) setTab("Data");
+  };
   return (
-    <div 
-      className={`relative min-w-[220px] rounded-lg border bg-[#1a1a1a] p-4 text-white shadow-xl transition-colors cursor-pointer ${
-        selected ? 'border-teal-500' : 'border-slate-700'
+    <>
+    <div
+      onClick={handleClick}
+      onDoubleClick={handleDoubleClick}
+      className={`relative min-w-55 rounded-lg border bg-[#1a1a1a] p-4 text-white shadow-xl transition-colors cursor-pointer ${
+        selected ? "border-teal-500" : "border-slate-700"
       }`}
     >
       {/* 1. Header & Status */}
@@ -53,5 +65,7 @@ export function TriangleNode({ data, selected }: NodeProps<TriangleNodeType>) {
         className="h-3 w-3 border-2 border-[#1a1a1a] bg-teal-500"
       />
     </div>
+    <span className="text-xs text-muted-foreground dark:text-muted-foreground/50">{`#${id}`}</span>
+</>
   );
 }

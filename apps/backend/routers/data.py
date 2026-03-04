@@ -6,26 +6,8 @@ from sqlalchemy import create_engine, text
 import uuid
 from fastapi import APIRouter, UploadFile, HTTPException
 from typing import Dict, List, Any
+from .db import engine, project_engine
 
-
-engine = create_engine("sqlite:///workbench.db")
-
-with engine.connect() as conn:
-    conn.execute(
-        text(
-            """
-        CREATE TABLE IF NOT EXISTS data (
-            id TEXT PRIMARY KEY,
-            name TEXT NOT NULL,
-            original_filename TEXT,
-            created_at TIMESTAMP,
-            last_modified TIMESTAMP,
-            row_count INTEGER
-        )
-    """
-        )
-    )
-    conn.commit()
 
 router = APIRouter(prefix="/data")
 
@@ -55,15 +37,16 @@ async def upload_preview(file: UploadFile):
 
 
 class MappingConfig(BaseModel):
+    project_id: str
     upload_id: str
-    project_name: str
+    dataset_name: str
     column_map: Dict[
         str, str
     ]  # {"origin": "Accident Year", "development": "Development Year", "paid": "Cumulative Paid"}
 
 
 class ConfirmIngestResponse(BaseModel):
-    project_id: str
+    dataset_id: str
     message: str
 
 
@@ -78,58 +61,60 @@ async def confirm_ingest(config: MappingConfig):
     # 1. Rename columns based on user mapping
     df = df.rename(columns=config.column_map)
 
-    # 2. Add Project ID
-    data_id = f"proj_{uuid.uuid4().hex[:8]}"
+    # 2. Add Dataset ID
+    data_id = f"dat_{uuid.uuid4().hex[:8]}"
+
+    pe = project_engine(project_id=config.project_id)
 
     # 1. Write to Metadata Table (`projects`)
-    with engine.connect() as conn:
+    with pe.connect() as conn:
         conn.execute(
             text(
                 """
-                INSERT INTO projects (id, name, original_filename, created_at, row_count, last_modified)
-                VALUES (:id, :name, :filename, :created_at, :row_count, :last_modified)
+                INSERT INTO project_tables (id, name, original_filename, row_count, table_type)
+                VALUES (:id, :name, :filename, :row_count, :table_type);
                 """
             ),
             {
                 "id": data_id,
-                "name": config.project_name,
+                "name": config.dataset_name,
                 "filename": filename,
-                "created_at": datetime.now(timezone.utc),
                 "row_count": len(df),
-                "last_modified": datetime.now(timezone.utc),
+                "table_type": "claims",
             },
         )
         conn.commit()
 
-    df["data_id"] = data_id
-
-    # 3. Ensure all required columns exist
-    required = ["origin", "development", "paid", "lob"]
-    for col in required:
-        if col not in df.columns:
-            df[col] = 0
-            # raise HTTPException(status_code=400, detail=f"Missing required column: {col}")
+    # 3. Default Lob
+    if "lob" not in df.columns:
+        df['lob'] = 'default'
 
     # 4. Save to Master
-    df[required + ["project_id"]].to_sql(
-        "claims_master", con=engine, if_exists="append", index=False
-    )
+    df.to_sql(data_id, con=pe, index=False)
 
     # Clean up memory
     del PENDING_UPLOADS[config.upload_id]
 
-    return {"project_id": data_id, "message": "Data ingested successfully"}
+# TODAY: It stopped right here....
+    return {"dataset_id": data_id, "message": "Data ingested successfully"}
 
 
-class ProjectMetaInfo(BaseModel):
+class TableMetaInfo(BaseModel):
     id: str
     name: str
     original_filename: str
-    created_at: str
-    last_modified: str
     row_count: int
+    table_type: str
 
 
 class FetchTablesResponse(BaseModel):
-    projects: List[ProjectMetaInfo]
+    tables: List[TableMetaInfo]
 
+@router.get('/fetch-tables',response_model=FetchTablesResponse)
+async def fetch_tables(project_id: str):
+    pe = project_engine(project_id)
+    records = pd.read_sql('select id, name, original_filename, row_count, table_type from project_tables',con=pe).to_dict('records')
+    print(records)
+    return {
+        "tables": records
+    }

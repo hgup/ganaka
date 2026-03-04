@@ -87,3 +87,53 @@ async def get_metadata(project_id: str):
     ).to_dict("records")
     project = records[0] if records else None
     return project
+
+
+# In your FastAPI router file
+from pydantic import BaseModel
+import json
+
+
+class CanvasSaveRequest(BaseModel):
+    project_id: str
+    canvas_json: str  # We will send the stringified JSON from the frontend
+
+
+class CanvasSaveResponseModel(BaseModel):
+    message: str
+
+
+@router.put("/save-canvas", response_model=CanvasSaveResponseModel)
+async def save_canvas(payload: CanvasSaveRequest):
+    # 1. Grab the specific project's database engine from our registry
+    pe = project_engine(project_id=payload.project_id)
+
+    # 2. Update the canvas_json column
+    with pe.connect() as conn:
+        conn.execute(
+            text(
+                """
+                UPDATE project_meta 
+                SET canvas_json = :canvas_json
+                -- Assuming there's only one row per file, but good practice to be safe
+            """
+            ),
+            {"canvas_json": payload.canvas_json},
+        )
+        conn.commit()
+
+    return {"message": "Canvas saved successfully"}
+
+class FetchCanvasResponse(BaseModel):
+    canvas_json: str
+
+@router.get('/fetch-canvas',response_model=FetchCanvasResponse)
+async def fetch_canvas(project_id: str):
+    pe = project_engine(project_id)
+    records = pd.read_sql(
+        text("SELECT canvas_json FROM project_meta where id= :id"),
+        params={"id": project_id},
+        con=pe,
+    ).to_dict("records")
+    project = records[0] if records else None
+    return project

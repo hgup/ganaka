@@ -27,6 +27,7 @@ import { useCanvasStore } from "@/store/useCanvasStore";
 import { TriangleNode, TriangleNodeType } from "./Nodes/TriangleNode";
 import { MethodNode, MethodNodeType } from "./Nodes/MethodNode";
 import { CanvasContextMenu } from "./ContextMenu";
+import { useUIStore } from "@/store/useUIStore";
 
 // TODO: We will build these in the next step and import them properly!
 // import { TriangleNode } from './Nodes/TriangleNode';
@@ -53,6 +54,17 @@ function Flow() {
     addNodeAtPosition,
   } = useCanvasStore();
 
+  const setChanged = useUIStore((s) => s.setChanged);
+  const unsubscribe = useCanvasStore.subscribe((s, p) => {
+    if (s.nodes !== p.nodes) setChanged(true);
+  });
+
+  useEffect(() => {
+    return () => {
+      unsubscribe();
+    };
+  }, [unsubscribe]);
+
   const onPaneClick = useCallback(
     (e: React.MouseEvent) => {
       if (pendingNodeType) {
@@ -78,18 +90,17 @@ function Flow() {
     },
     [selectNode],
   );
-  const onPaneContextMenu = useCallback(
-    () => {
-      selectNode(null)
-      if (selectedNodeId)
-        onNodesChange([
-          {
-            id: selectedNodeId,
-            type: "select",
-            selected: false,
-          },
-        ]);
-      },[selectedNodeId, onNodesChange, selectNode])
+  const onPaneContextMenu = useCallback(() => {
+    selectNode(null);
+    if (selectedNodeId)
+      onNodesChange([
+        {
+          id: selectedNodeId,
+          type: "select",
+          selected: false,
+        },
+      ]);
+  }, [selectedNodeId, onNodesChange, selectNode]);
 
   const onNodeContextMenu: NodeMouseHandler = useCallback(
     (event: React.MouseEvent, node) => {
@@ -145,8 +156,6 @@ function Flow() {
 
 export default function Canvas() {
   return (
-    <ReactFlowProvider>
       <Flow />
-    </ReactFlowProvider>
   );
 }

@@ -48,7 +48,7 @@ def _initialize_db_schema(engine: Engine):
                     name TEXT NOT NULL,
                     original_filename TEXT,
                     uploaded_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
-                    row_count INTEGER
+                    row_count INTEGER,
                     table_type TEXT
                 );
                 """
@@ -59,6 +59,7 @@ def _initialize_db_schema(engine: Engine):
 
 def project_engine(project_id: str) -> Engine:
     if project_id in ENGINE_REGISTRY:
+        print('found existing!==============')
         return ENGINE_REGISTRY[project_id]
 
     os.makedirs(PROJECTS_DIR,exist_ok=True)

@@ -10,10 +10,13 @@ import {
   EdgeChange,
 } from "@xyflow/react";
 
+type NodeTypes = "methodNode" | "triangleNode";
+
 // "Uploaded CSV"
 export type TriangleNodeData = Record<string, unknown> & {
   fileName: string;
   isUploaded: boolean;
+  id: string | null;
   metadata?: {
     originYears: number;
     devPeriods: number;
@@ -37,14 +40,16 @@ export type MethodNodeData = Record<string, unknown> & {
 };
 
 // Combine them into a custom Node type for strict typing
-export type CanvasNode = Node<TriangleNodeData | MethodNodeData>;
+export type CanvasNode = Node<TriangleNodeData | MethodNodeData> & {
+  type: NodeTypes;
+};
 
 interface CanvasState {
   // Core Canvas State
   nodes: CanvasNode[];
   edges: Edge[];
   selectedNodeId: string | null;
-  pendingNodeType: "triangleNode" | "methodNode" | null;
+  pendingNodeType: NodeTypes | null;
 
   // Canvas Actions (React Flow Requirements)
   onNodesChange: (changes: NodeChange[]) => void;
@@ -61,20 +66,34 @@ interface CanvasState {
   ) => void;
 
   // Actions
-  setPendingNode: (type: "triangleNode" | "methodNode" | null) => void;
+  setPendingNode: (type: NodeTypes | null) => void;
   addNodeAtPosition: (
-    type: "triangleNode" | "methodNode",
+    type: NodeTypes,
     position: { x: number; y: number },
   ) => void;
+  getNode: (id: string) => CanvasNode | null;
+  clear: () => void;
+  init: (project_id: string) => void;
 }
 
-
 export const useCanvasStore = create<CanvasState>((set, get) => ({
+  init: (project_id) => {
+    fetch(`/projects/${project_id}/data/canvas`)
+      .then((res) => res.json())
+      .then((d) => {
+        if (!d.error) {
+          const updates = JSON.parse(d);
+          set({ ...updates });
+        }
+      });
+  },
+  clear: () => {
+    set({ nodes: [], edges: [] });
+  },
   nodes: [],
   edges: [],
   selectedNodeId: null,
   pendingNodeType: null,
-
   setPendingNode: (type) => {
     set({ pendingNodeType: type });
   },
@@ -87,9 +106,10 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
       position, // mouse coords
       data:
         type === "triangleNode"
-          ? { fileName: "Drop CSV here...", isUploaded: false }
+          ? { fileName: "DATA NOT SELECTED", isUploaded: false, id: null }
           : { methodType: "none" as const, config: {} },
     };
+
     get().addNode(newNode);
     set({
       selectedNodeId: id,
@@ -97,6 +117,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
     });
   },
 
+  getNode: (id) => get().nodes.find((n) => n.id === id) ?? null,
 
   // --- REACT FLOW MECHANICS ---
   onNodesChange: (changes) => {
@@ -116,7 +137,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
   },
 
   removeNode: (id) => {
-    set({nodes: [...get().nodes.filter(n => n.id !== id)]})
+    set({ nodes: [...get().nodes.filter((n) => n.id !== id)] });
   },
 
   selectNode: (id) => {
@@ -125,6 +146,7 @@ export const useCanvasStore = create<CanvasState>((set, get) => ({
 
   // This is the magic function the Right Sidebar uses to tweak parameters!
   updateNodeData: (id, dataUpdate) => {
+    console.log("updating node data");
     set({
       nodes: get().nodes.map((node) => {
         if (node.id === id) {

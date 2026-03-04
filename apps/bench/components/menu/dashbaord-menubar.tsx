@@ -9,7 +9,6 @@ import {
   MenubarContent,
   MenubarItem,
   MenubarMenu,
-  MenubarSeparator,
   MenubarTrigger,
 } from "@ui/menubar";
 import Link from "next/link";
