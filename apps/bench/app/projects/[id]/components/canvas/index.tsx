@@ -54,16 +54,17 @@ function Flow() {
     addNodeAtPosition,
   } = useCanvasStore();
 
-  const setChanged = useUIStore((s) => s.setChanged);
-  const unsubscribe = useCanvasStore.subscribe((s, p) => {
-    if (s.nodes !== p.nodes) setChanged(true);
-  });
+  // const setChanged = useUIStore((s) => s.setChanged);
+  // const unsubscribe = useCanvasStore.subscribe((s, p) => {
+  //   if (s.nodes !== p.nodes) setChanged(true);
+  //   if (s.edges !== p.edges) setChanged(true);
+  // });
 
-  useEffect(() => {
-    return () => {
-      unsubscribe();
-    };
-  }, [unsubscribe]);
+  // useEffect(() => {
+  //   return () => {
+  //     unsubscribe();
+  //   };
+  // }, [unsubscribe]);
 
   const onPaneClick = useCallback(
     (e: React.MouseEvent) => {

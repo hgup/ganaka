@@ -55,12 +55,10 @@ export default function TopBar(props: { name: string }) {
 }
 
 function RunAnalysis() {
-  const setChanged = useUIStore((s) => s.setChanged);
   return (
     <Button
       variant="secondary"
       className="inline-flex h-7 gap-1 items-center px-4"
-      onClick={() => setChanged(true)}
     >
       <Play className="h-4 w-4" /> <span>Run Analysis</span>
     </Button>

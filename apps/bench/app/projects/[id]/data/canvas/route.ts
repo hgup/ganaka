@@ -1,12 +1,12 @@
-import { fetchCanvasProjectFetchCanvasGet, fetchTablesDataFetchTablesGet } from "@api/project/project";
+import { fetchCanvasProjectFetchCanvasGet } from "@api/project/project";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const projectId =  (await params).id;
+    const {id: projectId} = await params
 
     // 1. Validate the input
     if (!projectId) {
@@ -16,17 +16,15 @@ export async function GET(
       );
     }
 
-
     const results = await fetchCanvasProjectFetchCanvasGet({
       project_id: projectId,
     });
 
-    if(results.status !== 200)
+    if (results.status !== 200)
       return NextResponse.json(
         { error: "Backend error" },
         { status: results.status },
       );
-
 
     const canvas_json = results.data.canvas_json;
 
@@ -38,7 +36,7 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error(error)
+    console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch project data" },
       { status: 500 },
