@@ -10,7 +10,6 @@ import {
   BackgroundVariant,
   MiniMap,
   useReactFlow,
-  ReactFlowProvider,
 } from "@xyflow/react";
 import { useTheme } from "next-themes";
 
@@ -24,10 +23,9 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 
 // Import our Zustand store
 import { useCanvasStore } from "@/store/useCanvasStore";
-import { TriangleNode, TriangleNodeType } from "./Nodes/TriangleNode";
-import { MethodNode, MethodNodeType } from "./Nodes/MethodNode";
+import { TriangleNode } from "./Nodes/TriangleNode";
+import { MethodNode } from "./Nodes/MethodNode";
 import { CanvasContextMenu } from "./ContextMenu";
-import { useUIStore } from "@/store/useUIStore";
 
 // TODO: We will build these in the next step and import them properly!
 // import { TriangleNode } from './Nodes/TriangleNode';
@@ -47,6 +45,7 @@ function Flow() {
     edges,
     onNodesChange,
     onEdgesChange,
+    onEdgeDelete,
     onConnect,
     selectNode,
     selectedNodeId,
@@ -135,6 +134,7 @@ function Flow() {
           nodeTypes={nodeTypes}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
+          onEdgesDelete={onEdgeDelete}
           onNodeClick={onNodeClick}
           onPaneClick={onPaneClick}
           onPaneContextMenu={onPaneContextMenu}
@@ -156,7 +156,5 @@ function Flow() {
 }
 
 export default function Canvas() {
-  return (
-      <Flow />
-  );
+  return <Flow />;
 }

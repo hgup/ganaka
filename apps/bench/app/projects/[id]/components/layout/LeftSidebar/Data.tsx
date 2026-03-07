@@ -2,6 +2,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@ui/card";
@@ -10,7 +11,7 @@ import { useParams } from "next/navigation";
 import { DatasetMeta, useUIStore } from "@/store/useUIStore";
 import { Button } from "@ui/button";
 import { RefreshCcw } from "lucide-react";
-import { useCanvasStore } from "@/store/useCanvasStore";
+import { TriangleNodeData, useCanvasStore } from "@/store/useCanvasStore";
 import { cn } from "@lib/utils";
 // import { TYPE_ICON } from "../../constants";
 
@@ -21,9 +22,22 @@ export function Data() {
   const selectedNodeId = useCanvasStore((s) => s.selectedNodeId) ?? "";
   const updateNode = useCanvasStore((s) => s.updateNodeData);
   const selectedNode = useCanvasStore((s) => s.getNode)(selectedNodeId);
-  const handleDatasetChange = (name: string, id: string) => {
-    if (selectedNode && selectedNode.type === "triangleNode")
-      updateNode(selectedNodeId, { fileName: name, isUploaded: true, id: id });
+  const handleDatasetChange = (d: DatasetMeta) => {
+    if (selectedNode && selectedNode.type === "triangleNode") {
+      // Triangle node gets its data from here.
+      updateNode<TriangleNodeData>(selectedNodeId, {
+        fileName: d.name,
+        isUploaded: true,
+        dataId: d.id,
+        availableMeasures: d.measures,
+        metadata: {
+          devRange: [2004,2005],
+          isCumulative: true,
+          originRange: [2004,2005],
+          rowCount: 10
+        }
+      });
+    }
   };
 
   //   Uploading states
@@ -99,7 +113,7 @@ function DatasetComponent({
   enabled,
 }: {
   d: DatasetMeta;
-  onClick: (name: string, id: string) => void;
+  onClick: (d:DatasetMeta) => void;
   enabled: boolean | null;
 }) {
   //   const TableIcon = TYPE_ICON.table;
@@ -109,7 +123,7 @@ function DatasetComponent({
         "bg-muted",
         enabled ? "hover:bg-background cursor-pointer" : "opacity-60 ",
       )}
-      onClick={() => onClick(d.name, d.id)}
+      onClick={() => onClick(d)}
     >
       <CardHeader className="flex flex-row items-center m-0">
         <div className="inline-flex flex-col *:p-0">
@@ -126,7 +140,6 @@ function DatasetComponent({
             : `${d.row_count} r`}
         </div>
       </CardContent>
-
       {/* The tiny dark badge for row count shown in the image */}
     </Card>
   );

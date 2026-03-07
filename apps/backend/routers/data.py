@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+import json
 
 import pandas as pd
 from pydantic import BaseModel
@@ -11,7 +12,7 @@ from .db import engine, project_engine
 
 router = APIRouter(prefix="/data")
 
-PENDING_UPLOADS = {}
+PENDING_UPLOADS: Dict[str,pd.DataFrame] = {}
 
 
 class UploadPreviewResponse(BaseModel):
@@ -56,10 +57,16 @@ async def confirm_ingest(config: MappingConfig):
     if pending_data is None:
         raise HTTPException(status_code=400, detail="Upload expired")
 
-    df = pending_data["df"]
+    df = pd.DataFrame(pending_data["df"])
     filename = pending_data["filename"]
     # 1. Rename columns based on user mapping
-    df = df.rename(columns=config.column_map)
+    df = pd.DataFrame(df.rename(columns=config.column_map))
+
+    # "Dimension" vs "Measure"
+    dimensions = ['origin','development','index']
+    mapped_cols = [v for v in config.column_map.values() if v != ""]
+    measures = list(df.drop(mapped_cols,axis=1).columns)
+
 
     # 2. Add Dataset ID
     data_id = f"dat_{uuid.uuid4().hex[:8]}"
@@ -71,8 +78,8 @@ async def confirm_ingest(config: MappingConfig):
         conn.execute(
             text(
                 """
-                INSERT INTO project_tables (id, name, original_filename, row_count, table_type)
-                VALUES (:id, :name, :filename, :row_count, :table_type);
+                INSERT INTO project_tables (id, name, original_filename, row_count, table_type, measures_json)
+                VALUES (:id, :name, :filename, :row_count, :table_type, :measures);
                 """
             ),
             {
@@ -81,6 +88,7 @@ async def confirm_ingest(config: MappingConfig):
                 "filename": filename,
                 "row_count": len(df),
                 "table_type": "claims",
+                "measures": json.dumps(measures) # Store as ["Paid", "Incurred", "Reported"]
             },
         )
         conn.commit()
@@ -103,8 +111,10 @@ class TableMetaInfo(BaseModel):
     id: str
     name: str
     original_filename: str
+    uploaded_on: str
     row_count: int
     table_type: str
+    measures: List[str]
 
 
 class FetchTablesResponse(BaseModel):
@@ -113,8 +123,10 @@ class FetchTablesResponse(BaseModel):
 @router.get('/fetch-tables',response_model=FetchTablesResponse)
 async def fetch_tables(project_id: str):
     pe = project_engine(project_id)
-    records = pd.read_sql('select id, name, original_filename, row_count, table_type from project_tables',con=pe).to_dict('records')
-    print(records)
+    records = pd.read_sql('select * from project_tables',con=pe).to_dict(orient="records")
+    for i,r in enumerate(records):
+        records[i]['measures'] = json.loads(r['measures_json'])
+        del records[i]['measures_json']
     return {
         "tables": records
     }

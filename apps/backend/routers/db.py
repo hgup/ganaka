@@ -1,11 +1,13 @@
 import os
+from pydantic import BaseModel
 from sqlalchemy import create_engine, text
 from sqlalchemy.engine import Engine
 from typing import Dict
 
 ENGINE_REGISTRY: Dict[str, Engine] = {}
-PROJECTS_DIR = "projects/"
-DATABASE_FILE = "workbench.db"
+DB_FILE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECTS_DIR = os.path.join(DB_FILE_PATH,"projects/")
+DATABASE_FILE = os.path.join(DB_FILE_PATH,"workbench.db")
 
 
 engine = create_engine(f"sqlite:///{DATABASE_FILE}")
@@ -49,7 +51,8 @@ def _initialize_db_schema(engine: Engine):
                     original_filename TEXT,
                     uploaded_on TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
                     row_count INTEGER,
-                    table_type TEXT
+                    table_type TEXT,
+                    measures_json TEXT
                 );
                 """
             )
@@ -59,7 +62,6 @@ def _initialize_db_schema(engine: Engine):
 
 def project_engine(project_id: str) -> Engine:
     if project_id in ENGINE_REGISTRY:
-        print('found existing!==============')
         return ENGINE_REGISTRY[project_id]
 
     os.makedirs(PROJECTS_DIR,exist_ok=True)

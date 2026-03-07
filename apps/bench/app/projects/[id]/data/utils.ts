@@ -3,17 +3,17 @@ export const REQUIRED_FIELDS = [
   { 
     key: 'origin', 
     label: 'Origin Period', 
-    synonyms: ['ay', 'accident year', 'uw', 'underwriting year', 'period', 'year', 'origin'] 
+    synonyms: ['ay', 'uw', 'underwriting year', 'period', 'year', 'origin', 'accident'] 
   },
   { 
     key: 'development', 
-    label: 'Development Lag', 
+    label: 'Development Period', 
     synonyms: ['dev', 'lag', 'age', 'months', 'period', 'development'] 
   },
   { 
-    key: 'paid', 
-    label: 'Claim Amount', 
-    synonyms: ['amount', 'paid', 'loss', 'claims', 'value'] 
+    key: 'index', 
+    label: 'Index of Data', 
+    synonyms: ['GRNAME', 'GRCODE', 'index'] 
   },
   { 
     key: 'lob', 

@@ -1,17 +1,16 @@
 "use client";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import MethodSettings from "./Specification";
-import DataInspector from "./DataInspector";
-import { useState } from "react";
+// import { useState } from "react";
 import ExportSection from "./Export";
 
 export function RightSidebar() {
-  const [activeTab, onTabChange] = useState("specs");
+  // const [activeTab, onTabChange] = useState("specs");
 
   return (
     <aside className="w-60 border-l flex flex-col bg-background shrink-0">
       {/* Design / Properties tabs */}
-      <div className="flex border-b">
+      {/* <div className="flex border-b">
         {["Specs", "Inspector"].map((t) => (
           <button
             key={t}
@@ -22,16 +21,10 @@ export function RightSidebar() {
             {t}
           </button>
         ))}
-      </div>
+      </div> */}
 
       <ScrollArea className="flex-1">
-        {activeTab === "specs" && (
-          <>
-            <MethodSettings />
-          </>
-        )}
-
-        {activeTab === "inspector" && <DataInspector />}
+        <MethodSettings />
       </ScrollArea>
       <ExportSection />
     </aside>

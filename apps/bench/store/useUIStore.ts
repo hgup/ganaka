@@ -1,12 +1,7 @@
+import { FetchTablesResponse } from "@api/schemas/fetchTablesResponse.zod";
 import { create } from "zustand";
 
-export type DatasetMeta = {
-  name: string;
-  id: string;
-  original_filename: string;
-  row_count: number;
-  table_type: string;
-};
+export type DatasetMeta = FetchTablesResponse['tables'][0]
 
 export interface UIState {
   leftSidebar: {

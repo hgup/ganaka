@@ -2,6 +2,7 @@ import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarSection } from "../LeftSidebar/SidebarSection";
+import DataDrawer from "../DataDrawer";
 export default function MethodSettings() {
   return (
     <div className="py-2 space-y-1">
@@ -34,7 +35,7 @@ export default function MethodSettings() {
       <Separator />
 
       {/* Reserving Methods */}
-      <SidebarSection title="Reserving Methods">
+      <SidebarSection title="Node">
         <div className="px-3 pb-2 space-y-1">
           {[
             "Chain Ladder",
@@ -62,6 +63,8 @@ export default function MethodSettings() {
       </SidebarSection>
 
       <Separator />
+
+    <DataDrawer />
 
     </div>
   );

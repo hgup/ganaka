@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useActionState,
-  useEffect,
-  useState,
-} from "react";
+import { useActionState, useEffect, useState } from "react";
 import { uploadAction } from "./action";
 import { Button } from "@ui/button";
 import { Input } from "@ui/input";
@@ -25,19 +21,19 @@ import {
   FieldLegend,
   FieldSet,
 } from "@ui/field";
-import { AlertDestructive } from "@components/alerts";
 import { useParams } from "next/navigation";
 import { performAutoMapping, REQUIRED_FIELDS } from "./utils";
 import { Separator } from "@ui/separator";
 import { useUIStore } from "@/store/useUIStore";
+import { toast } from "sonner";
 
 export default function DataIngestionWizard() {
-  const setUploading = useUIStore(s => s.setUploadingDataset)
-  const fetchDatasets = useUIStore(s => s.fetchDatasets)
+  const setUploading = useUIStore((s) => s.setUploadingDataset);
+  const fetchDatasets = useUIStore((s) => s.fetchDatasets);
   const [state, action, pending] = useActionState(uploadAction, {
     step: 1,
   });
-  const {id: projectId} = useParams<{id:string}>()
+  const { id: projectId } = useParams<{ id: string }>();
   const [mapping, setMapping] = useState<Record<string, string>>({}); // { "User_Col": "canonical_col" }
   const [name, setName] = useState<string | null>(null);
   const handleMapChange = (value: string) => {
@@ -53,16 +49,22 @@ export default function DataIngestionWizard() {
       return newMap;
     });
   };
+
   useEffect(() => {
-  // If the action successfully moved us to step 3, the upload is done!
-  if (state.step === 3 && !state.error) {
-    // 1. Close the wizard/modal
-    setUploading(false);
-    
-    // 2. Refresh the datasets in the background so the UI updates
-    fetchDatasets(projectId);
-  }
-}, [state.step, state.error, projectId, setUploading, fetchDatasets]);
+    if (state.error) {
+      toast.error(state.error);
+    }
+  }, [state]);
+  useEffect(() => {
+    // If the action successfully moved us to step 3, the upload is done!
+    if (state.step === 3 && !state.error) {
+      // 1. Close the wizard/modal
+      setUploading(false);
+
+      // 2. Refresh the datasets in the background so the UI updates
+      fetchDatasets(projectId);
+    }
+  }, [state.step, state.error, projectId, setUploading, fetchDatasets]);
 
   const [lastMappedId, setLastMappedId] = useState<string | null>(null);
   if (
@@ -81,9 +83,20 @@ export default function DataIngestionWizard() {
     case 1:
       stepContent = (
         <Field className="max-w-lg">
-          <FieldLegend>Upload Raw Claims Data</FieldLegend>
+          <FieldLegend>Upload</FieldLegend>
           <FieldLabel htmlFor="file">CSV File</FieldLabel>
-          <Input type="file" id="file" name="file" accept=".csv" required />
+          <Input
+            type="file"
+            id="file"
+            name="file"
+            accept=".csv"
+            required
+            onChange={(e) => {
+              if (name === null && e.target.files?.length) {
+                setName(e.target.files.item(0)?.name ?? "");
+              }
+            }}
+          />
           <FieldDescription>Select a CSV file to upload.</FieldDescription>
           <Button name="step" value="1" disabled={pending}>
             {pending ? "Reading File..." : "Upload & Preview"}
@@ -186,10 +199,6 @@ export default function DataIngestionWizard() {
       >
         {stepContent}
       </form>
-      <Separator className="my-6" />
-      {state.error && (
-        <AlertDestructive title="Error" description={state.error} />
-      )}
     </div>
   );
 }

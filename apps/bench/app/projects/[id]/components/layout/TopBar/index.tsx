@@ -11,10 +11,12 @@ import { Separator } from "@/components/ui/separator";
 import Link from "next/link";
 import { ThemeSwitch } from "./theme-switch";
 import { useUIStore } from "@/store/useUIStore";
-import { useActionState, useEffect } from "react";
+import { useActionState } from "react";
 import { saveCanvas } from "./actions";
 import { useReactFlow } from "@xyflow/react";
 import { useParams } from "next/navigation";
+
+export const NAME= "Ganaka" // "गणक"
 
 export default function TopBar(props: { name: string }) {
   return (
@@ -25,9 +27,9 @@ export default function TopBar(props: { name: string }) {
           href="/dashboard"
           className="flex items-center gap-1.5 font-semibold text-sm"
         >
-          <span className="text-accent-foreground">Ganaka</span>
+          <span className="text-accent-foreground mx-3">{NAME}</span>
         </Link>
-        <Separator orientation="vertical" className="h-4" />
+        <Separator orientation="vertical" className="h-4 my-auto" />
         <Button
           variant="ghost"
           size="sm"

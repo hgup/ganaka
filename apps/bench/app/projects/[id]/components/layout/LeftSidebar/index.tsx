@@ -6,7 +6,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { SidebarSection } from "./SidebarSection";
 import { LayerRow } from "./LayerItem";
 import { DATA, MODELS } from "../../constants";
-import {  UIState, useUIStore } from "@/store/useUIStore";
+import { UIState, useUIStore } from "@/store/useUIStore";
 import { Data } from "./Data";
 const PANES: UIState["leftSidebar"]["tab"][] = ["Nodes", "Data"];
 
@@ -31,18 +31,18 @@ export function LeftSidebar() {
         </Button>
       </div>
 
-      <ScrollArea className="flex-1">
-        {activeTab === "Nodes" && (
-          <div className="py-1">
+      {activeTab === "Nodes" && (
+        <div className="py-1">
+          <ScrollArea className="flex-1">
             <Scope />
             <Separator className="my-1" />
             <ModalTree />
             <Separator className="my-1" />
             <DataCan />
-          </div>
-        )}
-        {activeTab === "Data" && <Data />}
-      </ScrollArea>
+          </ScrollArea>
+        </div>
+      )}
+      {activeTab === "Data" && <Data />}
     </aside>
   );
 }

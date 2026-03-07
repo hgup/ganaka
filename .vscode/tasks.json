@@ -41,6 +41,9 @@
       "command": "pnpx",
       "args": ["orval"],
       "options": {
+        "env": {
+          "NODE_OPTIONS": "--use-system-ca"
+        },
         "cwd": "${workspaceFolder}/apps/bench"
       },
       "presentation": {

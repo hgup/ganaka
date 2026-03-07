@@ -9,10 +9,10 @@ from fastapi import APIRouter
 router = APIRouter()
 
 
-class FetchTablesResponse(BaseModel):
+class FetchProjectsResponse(BaseModel):
     projects: List[ProjectMetaInfo]
 
-@router.get("/fetch-projects", response_model=FetchTablesResponse)
+@router.get("/fetch-projects", response_model=FetchProjectsResponse)
 async def fetch_projects():
     try:
         projects = pd.read_sql(f"SELECT * FROM projects", con=engine).to_dict("records")

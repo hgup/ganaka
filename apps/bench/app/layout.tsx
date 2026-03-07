@@ -8,6 +8,7 @@ import './globals.css'
 import localFont from "next/font/local";
 import { ThemeProvider } from "@components/theme-provider";
 import { cn } from "@lib/utils";
+import { Toaster } from "@ui/sonner";
 // const local_jetbrains_mono = localFont({
 //   src: "../public/JetBrainsMono-VariableFont_wght.ttf",
 // });
@@ -37,6 +38,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
+          <Toaster position="top-center" offset={{top: '3.5rem'}} />
         </ThemeProvider>
       </body>
     </html>

@@ -31,9 +31,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { FetchTablesResponse } from "@api/schemas/fetchTablesResponse.zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FetchProjectsResponse } from "@api/schemas/fetchProjectsResponse.zod";
 
 function formatDate(dateStr: string) {
   return new Date(dateStr).toLocaleDateString("en-US", {
@@ -54,7 +54,7 @@ function relativeTime(dateStr: string) {
   return formatDate(dateStr);
 }
 
-export default function ProjectsDashboard({ projects }: FetchTablesResponse) {
+export default function ProjectsDashboard({ projects }: { projects: FetchProjectsResponse['projects']}) {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("lastOpened");
   const [view, setView] = useState("grid");

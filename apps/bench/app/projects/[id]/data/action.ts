@@ -1,6 +1,9 @@
 "use server";
 
-import { confirmIngestDataConfirmIngestPost, uploadPreviewDataUploadPreviewPost } from "@api/project/project";
+import {
+  confirmIngestDataConfirmIngestPost,
+  uploadPreviewDataUploadPreviewPost,
+} from "@api/project/project";
 import z from "zod";
 
 export type PreviewData = {
@@ -10,13 +13,42 @@ export type PreviewData = {
 };
 
 // Unified Action approach
-const mappingSchema = z.object({
-  // These 4 are strictly required
-  // lob: z.string().min(0, "Please map the Line of Business column"),
-  // paid: z.string().min(0, "Please map the Paid/Amount column"),
-  origin: z.string().min(1, "Please map the Origin/Accident Year column"),
-  development: z.string().min(1, "Please map the Development/Lag column"),
-}).catchall(z.string());
+const mappingSchema = z
+  .record(z.string(), z.string())
+  .superRefine((mapping, ctx) => {
+    const selectedLabels = Object.values(mapping);
+
+    // 1. Check if 'origin' exists as a value
+    if (!selectedLabels.includes("origin")) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "You must assign 'Origin' to one of your columns.",
+        path: [], // Top-level error
+      });
+    }
+
+    // 2. Check if 'development' exists as a value
+    if (!selectedLabels.includes("development")) {
+      ctx.addIssue({
+        code: "custom",
+        message: "You must assign 'Development' to one of your columns.",
+        path: [],
+      });
+    }
+
+    // 3. (Optional) Check if the same label is used twice
+    const duplicates = selectedLabels.filter(
+      (item, index) => selectedLabels.indexOf(item) !== index && item !== "",
+    );
+
+    if (duplicates.length > 0) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Label '${duplicates[0]}' is assigned to multiple columns.`,
+        path: [],
+      });
+    }
+  });
 
 const Step1Schema = z.object({
   step: z.literal(1),
@@ -30,13 +62,17 @@ const Step2Schema = z.object({
   uploadId: z.string(),
   datasetName: z.string().min(4),
   // columnMap: Record<string, string>,
-  columnMap: z.string()
+  columnMap: z
+    .string()
     // Step A: Safely parse the JSON string
     .transform((str, ctx) => {
       try {
         return JSON.parse(str);
       } catch {
-        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Invalid JSON format" });
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Invalid JSON format",
+        });
         return z.NEVER;
       }
     })
@@ -87,7 +123,7 @@ export async function uploadAction(
   let dat;
   switch (validated.data.step) {
     case 1: // Preview Data
-      dat = validated.data
+      dat = validated.data;
       const preview_res = await uploadPreviewDataUploadPreviewPost({
         file: validated.data.file,
       });
@@ -96,7 +132,7 @@ export async function uploadAction(
         return { ...prevState, error: "Backend connection failed #1" };
 
       // If everything is okay
-      return { step: 2, data: preview_res.data, datasetName: dat.datasetName};
+      return { step: 2, data: preview_res.data, datasetName: dat.datasetName };
 
     case 2: // Confirm Ingest
       dat = validated.data;
@@ -109,7 +145,10 @@ export async function uploadAction(
       if (confirm_res.status !== 200)
         return { ...prevState, error: "Backend connection failed #2" };
 
-
-      return { step:3, datasetId: confirm_res.data.dataset_id, datasetName: dat.datasetName };
+      return {
+        step: 3,
+        datasetId: confirm_res.data.dataset_id,
+        datasetName: dat.datasetName,
+      };
   }
 }
